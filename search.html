@@ -760,8 +760,29 @@
     var vm = new Vue({
         el: "#searchApp",
         data: {
+            search:{
+                key: ""//用户输入的条件
+            },
+            goodsList:[]//接收返回的结果集
         },
+        created(){
+            if (!location.search){//location.search可以在web控制台测试
+                return;//如果为空就返回
+            }
+            //location.search   "?key=%E6%89%8B%E6%9C%BA"
+            const search =  ly.parse(location.search.substring(1));//转json
+            this.search = search;//上面一行处理后的结构和 data中search一样,可以在控制台测试
+            this.loadData();//调用
+        },
+        methods:{
+            loadData(){
+                ly.http.post("/search/page",this.search).then(res=>{
+                    console.log(res);
+                }).catch(()=>{
 
+                });
+            }
+        },
         components:{
             lyTop: () => import("./js/pages/top.js")
         }
