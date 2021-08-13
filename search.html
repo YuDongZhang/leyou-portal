@@ -293,10 +293,10 @@
                         </li>
                     </ul>
                     <div class="top-pagination">
-                        <span>共 <i style="color: #222;">7600+</i> 商品</span>
-                        <span><i style="color: red;">2</i>/123</span>
-                        <a class="btn-arrow" href="#" style="display: inline-block">&lt;</a>
-                        <a class="btn-arrow" href="#" style="display: inline-block">&gt;</a>
+                        <span>共 <i style="color: #222;">{{total}}+</i> 商品</span>
+                        <span><i style="color: red;">{{search.page}}</i>/{{totalPage}}</span>
+                        <a class="btn-arrow" href="#" style="display: inline-block" @click="prev()">&lt;</a>
+                        <a class="btn-arrow" href="#" style="display: inline-block" @click="next()">&gt;</a>
                     </div>
                 </div>
             </div>
@@ -457,7 +457,8 @@
                 page: 1,//当前页
             },
             goodsList:[],//接收返回的结果集
-            totalPage: 1
+            totalPage: 1,
+            total: 0
         },
         created(){
             if (!location.search){//location.search可以在web控制台测试
@@ -492,6 +493,7 @@
                     })
                     this.goodsList = data.items;
                     this.totalPage = data.totalPage;
+                    this.total = data.total;
                 }).catch(()=>{
 
                 });
