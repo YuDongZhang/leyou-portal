@@ -778,11 +778,12 @@
         methods:{
             loadData(){
                 ly.http.post("/search/page",this.search).then(({data})=>{
-                    this.goodsList = data.items;
-                    this.goodsList.forEach(goods =>{
+
+                    data.items.forEach(goods =>{
                         goods.skus = JSON.parse(goods.skus);//json字符串转json对象
                         goods.selected = goods.skus[0];//扩展一个属性,selected作为选中的,默认选择第一个
                     })
+                    this.goodsList = data.items;
                 }).catch(()=>{
 
                 });
