@@ -302,14 +302,15 @@
             </div>
             <div class="goods-list">
                 <ul class="yui3-g">
-                    <li class="yui3-u-1-5">
+                    <li class="yui3-u-1-5" v-for="(goods,index) in goodsList" :key="index">
                         <div class="list-wrap">
                             <div class="p-img">
                                 <a href="item.html" target="_blank"><img src="img/_/mobile01.png" height="200"/></a>
                                 <ul class="skus">
-                                    <li class="selected"><img src="img/_/mobile01.png"></li>
-                                    <li class=""><img src="img/_/mobile01.png"></li>
-                                    <li class=""><img src="img/_/mobile01.png"></li>
+                                    <li :class="{selected: goods.selected.id == sku.id}" v-for="(sku,j) in goods.skus" @mouseover="goods.selected=sku"><img :src="sku.image"></li>
+                                <!-- 这里的图片要删除 -->
+                                <!-- <li class=""><img src="img/_/mobile01.png"></li>-->
+                                    <!--<li class=""><img src="img/_/mobile01.png"></li>-->
                                 </ul>
                             </div>
                             <div class="clearfix"></div>
@@ -776,8 +777,12 @@
         },
         methods:{
             loadData(){
-                ly.http.post("/search/page",this.search).then(res=>{
-                    console.log(res);
+                ly.http.post("/search/page",this.search).then(({data})=>{
+                    this.goodsList = data.items;
+                    this.goodsList.forEach(goods =>{
+                        goods.skus = JSON.parse(goods.skus);//json字符串转json对象
+                        goods.selected = goods.skus[0];//扩展一个属性,selected作为选中的,默认选择第一个
+                    })
                 }).catch(()=>{
 
                 });
