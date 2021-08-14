@@ -118,7 +118,7 @@
         </div>
         <!--selector-->
         <div class="clearfix selector">
-            <div class="type-wrap" v-for="(f,index) in filters" :key="index" v-if="f.k !='品牌'">
+            <div class="type-wrap" v-for="(f,index) in filters" :key="index" v-if="f.k !='品牌'" v-show="index < 5||show">
                 <div class="fl key">{{f.k}}</div>
                 <div class="fl value">
                     <ul class="type-list">
@@ -141,7 +141,14 @@
                     <a href="javascript:void(0);" class="sui-btn">多选</a>
                 </div>
             </div>
-
+            <div class="type-wrap" style="text-align: center">
+                <v-btn small flat @click="show=true" v-show="!show">
+                    更多<v-icon>arrow_drop_down</v-icon>
+                </v-btn>
+                <v-btn small="" flat @click="show=false" v-show="show">
+                    收起<v-icon>arrow_drop_up</v-icon>
+                </v-btn>
+            </div>
         </div>
         <!--details-->
         <div class="details">
@@ -332,6 +339,7 @@
             totalPage: 1,
             total: 0,
             filters:[],
+            show: false,
         },
         created(){
             if (!location.search){//location.search可以在web控制台测试
