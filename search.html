@@ -122,7 +122,8 @@
                 <div class="fl key">{{f.k}}</div>
                 <div class="fl value">
                     <ul class="type-list">
-                        <li v-for="(o,j) in f.options" :key="j">
+                        <!--     传递项名,和项内容                   -->
+                        <li v-for="(o,j) in f.options" :key="j" @click="selectFilter(f.k,o)">
                             <a>{{o.name}}</a>
                         </li>
                     </ul>
@@ -133,8 +134,8 @@
                 <div class="fl key brand">{{f.k}}</div>
                 <div class="value logos">
                     <ul class="logo-list">
-                        <li v-for="(o,j) in f.options" :key="j"  v-if="o.image"><img :src="o.image" /></li>
-                        <li style="text-align: center" v-else><a style="line-height: 30px; font-size: 12px" href="#">{{o.name}}</a></li>
+                        <li v-for="(o,j) in f.options" :key="j"  v-if="o.image" @click="selectFilter(f.k,o)"><img :src="o.image" /></li>
+                        <li style="text-align: center" v-else @click="selectFilter(f.k,o)"><a style="line-height: 30px; font-size: 12px" href="#">{{o.name}}</a></li>
                     </ul>
                 </div>
                 <div class="fl ext">
@@ -334,6 +335,7 @@
             search:{
                 key: "",//用户输入的条件
                 page: 1,//当前页
+                filter: {},
             },
             goodsList:[],//接收返回的结果集
             totalPage: 1,
@@ -348,6 +350,7 @@
             //location.search   "?key=%E6%89%8B%E6%9C%BA"
             const search =  ly.parse(location.search.substring(1));//转json
             search.page = parseInt(search.page)||1;
+            search.filter = search.filter || {};//和上面一样都是避免被覆盖
             this.search = search;//上面一行处理后的结构和 data中search一样,可以在控制台测试
             this.loadData();//调用
         },
@@ -409,6 +412,18 @@
                 if (this.search.page<this.totalPage){
                     this.search.page++;
                 }
+            },
+            selectFilter(k,o){
+                let obj = {};//为了让search得到监控
+                Object.assign(obj,this.search)
+                if(k =="品牌" || k == "分类"){
+                    //给filter添加属性k,这个属性名是不确定的
+                    obj.filter[k] = o.id;
+                }else{
+                    //给filter添加属性k,这个属性名是不确定的
+                    obj.filter[k] = o.name;
+                }
+                this.search = obj;
             }
         },
         components:{
