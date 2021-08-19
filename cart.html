@@ -66,7 +66,7 @@
                                 </li>
                                 <li class="yui3-u-1-8"><span style="line-height:70px " class="sum">{{ly.formatPrice(cart.price * cart.num)}}</span></li>
                                 <li class="yui3-u-1-8">
-                                    <a href="#none">删除</a><br />
+                                    <a href="javascript:void(0);" @click="deleteCart(index)">删除</a><br />
                                     <a href="#none">移到我的关注</a>
                                 </li>
                             </ul>
@@ -86,9 +86,9 @@
                     <a href="#none">清除下柜商品</a>
                 </div>
                 <div class="toolbar">
-                    <div class="chosed">已选择<span>0</span>件商品</div>
+                    <div class="chosed">已选择<span>{{total}}</span>件商品</div>
                     <div class="sumprice">
-                        <span><em>总价（不含运费） ：</em><i class="summoney">8848.00</i></span>
+                        <span><em>总价（不含运费） ：</em><i class="summoney">{{totalPrice}}</i></span>
                         <span><em>已节省：</em><i>-¥20.00</i></span>
                     </div>
                     <div class="sumbtn">
@@ -289,6 +289,14 @@
                 }
             }
         },
+        computed:{
+            total(){
+                return this.selected.reduce((c1,c2)=>c1+c2.num,0)
+            },
+            totalPrice() {
+                return ly.formatPrice(this.selected.reduce((c1, c2) => c1 + c2.num * c2.price, 0));//这里笔记中是对的
+            }
+        },
         methods:{
             incr(cart){
                 cart.num++;
@@ -310,6 +318,17 @@
                     // 已登录
 
                 }).catch(() => {
+                    // 未登录
+                    ly.store.set("carts",this.carts);
+                })
+            },
+            deleteCart(index){
+                // 先判断登录状态
+                ly.verify().then(() => {
+                    // 已登录
+
+                }).catch(() => {
+                    this.carts.splice(index,1);
                     // 未登录
                     ly.store.set("carts",this.carts);
                 })
