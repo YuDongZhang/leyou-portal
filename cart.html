@@ -273,6 +273,11 @@
             // 先判断登录状态
             ly.verify().then(() => {
                 // 已登录
+                ly.http.get("/cart").then(({data})=>{//解构表达式
+                    //console.log(res);
+                    this.carts = data;
+                    this.selected = this.carts;
+                });
 
             }).catch(() => {
                 // 未登录
