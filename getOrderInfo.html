@@ -181,7 +181,7 @@
 				</div>
 				<div class="list">
 					<span>运费：</span>
-					<em class="transport">{{ly.formatPrice(this.order.postFree)}}</em>
+					<em class="transport">{{ly.formatPrice(this.order.postFee)}}</em>
 				</div>
 			</div>
 		</div>
@@ -193,7 +193,7 @@
 			</div>
 		</div>
 		<div class="submit">
-			<a class="sui-btn btn-danger btn-xlarge" href="pay.html">提交订单</a>
+			<a class="sui-btn btn-danger btn-xlarge" href="javascript:void(0);" @click="submit()">提交订单</a>
 		</div>
 	</div>
 
@@ -231,7 +231,7 @@
 				selectedAddress: 0,
 				order:{//封装要提交的数据
                 	paymentType:2,
-					postFree:1000,
+					postFee:1000,
 					fanxian:500,
 				},
 				carts: []
@@ -254,7 +254,49 @@
 					return ly.formatPrice(this.carts.reduce((c1, c2) => c1 + c2.num * c2.price, 0));//这里笔记中是对的
 				},
 				actualPrice(){
-					return this.totalPrice + this.order.postFree - this.order.fanxian;
+					return this.totalPrice + this.order.postFee - this.order.fanxian;
+				}
+			},
+			methods: {
+				submit() {
+					// 先判断登录状态
+					ly.verify().then(({data}) => {
+						// 把购物车数据处理成订单详情
+						const orderDetail = {orderDetails: this.carts};
+						const addr = this.addresses[this.selectedAddress];
+						const obj = {
+							receiver: addr.name,
+							receiverState: addr.state,
+							receiverCity: addr.city,
+							receiverAddress: addr.address,
+							receiverDistrict: addr.district,
+							receiverMobile: addr.phone,
+							receiverZip: addr.zipCode
+						};
+						// 复制到订单对象
+						Object.assign(this.order, obj,orderDetail, {
+							totalPay: ly.formatPrice(this.totalPrice),//我这边有点问题是字符串,传到后台报错了
+							actualPay: this.actualPrice,
+							buyerMessage: null,
+							buyerNick : data.username
+						});
+						// 提交订单
+						ly.http.post("/order/order", this.order,{
+							transformResponse: [
+								function(data){
+									return data;
+								}
+							]
+						}).then(({data}) => {
+							// 在线支付，需要到付款页
+							window.location = "http://www.leyou.com/pay.html?orderId=" + data;
+						}).catch((resp) => {
+							alert("订单提交失败，可能是缺货!")
+						})
+					}).catch(() => {
+						// 未登录
+						// window.location = "http://www.leyou.com/login.html?returnUrl=http://www.leyou.com/cart.html";
+					})
 				}
 			},
 			components:{
