@@ -308,6 +308,7 @@
                 // 先判断登录状态
                 ly.verify().then(() => {
                     // 已登录
+                    ly.http.post("/cart",{skuId:cart.skuId,num:cart.num});
 
                 }).catch(() => {
                     // 未登录
@@ -321,7 +322,7 @@
                 // 先判断登录状态
                 ly.verify().then(() => {
                     // 已登录
-
+                    ly.http.post("/cart",{skuId:cart.skuId,num:cart.num});
                 }).catch(() => {
                     // 未登录
                     ly.store.set("carts",this.carts);
